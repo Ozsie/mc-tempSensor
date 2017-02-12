@@ -1,0 +1,32 @@
+{
+  "name": "mc-tempsensor",
+  "version": "1.0.1",
+  "description": "A RaspberryPi DS18B20 library",
+  "main": "tempSensor.js",
+  "scripts": {
+    "pretest": "jshint tempSensor.js",
+    "test": "mocha test --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ozsie/mashControl.git"
+  },
+  "keywords": [
+    "raspberry",
+    "pi",
+    "ds18b20",
+    "temperature"
+  ],
+  "author": "Oscar Djupfeldt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ozsie/mashControl/issues"
+  },
+  "homepage": "https://github.com/Ozsie/mashControl#readme",
+  "dependencies": {
+    "jshint": "2.9.4",
+    "winston": "2.3.1",
+    "mocha": "3.2.0",
+    "chai": "4.0.0-canary.1"
+  }
+}
