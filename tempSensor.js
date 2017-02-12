@@ -1,5 +1,9 @@
 var fs = require('fs');
 var settings = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
+
+if (!fs.existsSync(settings.logs.directory)) {
+  fs.mkdir(settings.logs.directory);
+}
 var winston = require('winston');
 var logger = new (winston.Logger)({
   transports: [
