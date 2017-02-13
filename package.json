@@ -4,7 +4,7 @@
   "description": "A RaspberryPi DS18B20 library",
   "main": "tempSensor.js",
   "scripts": {
-    "prepublish": "git tag -a v$npm_package_version -m 'tag version v$npm_package_version'",
+    "publish": "git tag -a v$npm_package_version -m 'tag version v$npm_package_version'",
     "postpublish": "git push --tags",
     "pretest": "jshint tempSensor.js",
     "test": "mocha test --recursive"
