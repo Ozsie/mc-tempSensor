@@ -1,5 +1,15 @@
 var fs = require('fs');
-var settings = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
+try {
+  settings = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
+} catch (err) {
+  settings = {
+    input: "/sys/bus/w1/devices/28-800000263717/w1_slave",
+    installKernelMod: false,
+    logs: {
+      directory: "./logs"
+    }
+  };
+}
 
 if (!fs.existsSync(settings.logs.directory)) {
   fs.mkdir(settings.logs.directory);
