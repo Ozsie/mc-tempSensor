@@ -47,7 +47,13 @@ var parseTemp = function(data) {
   var available = data.match(/([A-Z])\w+/g)[0];
   var temperature = 'n/a';
   if (available === 'YES') {
-    temperature = data.match(/(t=)[0-9]{5}/g)[0];
+    if (data.match(/(t=)[0-9]{5}/g)) {
+      temperature = data.match(/(t=)[0-9]{5}/g)[0];
+    } else if (data.match(/(t=)[0-9]{4}/g)) {
+      temperature = data.match(/(t=)[0-9]{4}/g)[0];
+    } else if (data.match(/(t=)[0-9]{3}/g)) {
+      temperature = data.match(/(t=)[0-9]{3}/g)[0];
+    }
     temperature = temperature.split("=")[1];
     temperature = parseInt(temperature);
   }
