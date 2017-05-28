@@ -3,7 +3,7 @@ var winston = require('winston');
 
 var logDirectory = './logs';
 
-var settings = {defaultPath: true};
+var settings = {defaultPath: true, installKernelMod: false};
 
 if (!fs.existsSync(logDirectory)) {
   fs.mkdir(logDirectory);
@@ -100,9 +100,16 @@ var readAndParse = function(callback) {
 };
 
 var init = function(sensors, newSettings, callback) {
-  settings = newSettings;
+  if (newSettings) {
+    settings = newSettings;
+  }
+
   if (!sensors) {
-    callback("No input selected.");
+    if (callback) {
+      callback("No input selected.");
+    } else {
+      return "No input selected";
+    }
   } else if (typeof sensors === 'string') {
     input = [sensors];
   } else {
@@ -113,7 +120,9 @@ var init = function(sensors, newSettings, callback) {
     exec("modprobe w1-gpio", modprobe);
     exec("modprobe w1-therm", modprobe);
   }
-  callback(undefined);
+  if (callback) {
+    callback(undefined);
+  }
 };
 
 module.exports = {
