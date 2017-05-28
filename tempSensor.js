@@ -1,73 +1,86 @@
 var fs = require('fs');
-try {
-  settings = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
-} catch (err) {
-  settings = {
-    input: "/sys/bus/w1/devices/28-800000263717/w1_slave",
-    installKernelMod: false,
-    logs: {
-      directory: "./logs"
-    }
-  };
+var winston = require('winston');
+
+var logDirectory = './logs';
+
+var settings = {defaultPath: true};
+
+if (!fs.existsSync(logDirectory)) {
+  fs.mkdir(logDirectory);
 }
 
-if (!fs.existsSync(settings.logs.directory)) {
-  fs.mkdir(settings.logs.directory);
-}
-var winston = require('winston');
 var logger = new (winston.Logger)({
   transports: [
     new (winston.transports.Console)(),
-    new (winston.transports.File)({ name:"tempSensor", filename: settings.logs.directory + '/tempSensor.log' })
+    new (winston.transports.File)({ name:"tempSensor", filename: logDirectory + '/tempSensor.log' })
   ]
 });
 
 var modprobe = function(error, stdout, stderr) {
- if (error) {
-   logger.error("MODPROB ERROR:  ", error);
-   logger.error("MODPROB STDERR: ", stderr);
- }
+  if (error) {
+    logger.error("MODPROB ERROR:  ", error);
+    logger.error("MODPROB STDERR: ", stderr);
+  }
 };
-
-if (settings.installKernelMod) {
-  exec("modprobe w1-gpio", modprobe);
-  exec("modprobe w1-therm", modprobe);
-}
 
 var readTemp = function(callback) {
   if (!callback || typeof callback !== "function") {
     throw new Error("Callback function required");
   }
-  fs.readFile(settings.input, 'utf8', callback);
+  var response = [];
+  for (var i in input) {
+    try {
+      var path;
+      if (settings.defaultPath) {
+        path = '/sys/bus/w1/devices/' + input[i] + '/w1_slave';
+      } else {
+        path = input[i];
+      }
+      var data = fs.readFileSync(path, 'utf8');
+      response.push(data);
+    } catch (Error) {
+      response.push({error: Error});
+    }
+  }
+  callback(undefined, response);
 };
 
-var parseTemp = function(data) {
-  var crc = data.match(/(crc=)[a-z0-9]*/g)[0];
-  crc = crc.split("=")[1];
-  var available = data.match(/([A-Z])\w+/g)[0];
-  var temperature = 'n/a';
-  if (available === 'YES') {
-    if (data.match(/(t=)[0-9]{5}/g)) {
-      temperature = data.match(/(t=)[0-9]{5}/g)[0];
-    } else if (data.match(/(t=)[0-9]{4}/g)) {
-      temperature = data.match(/(t=)[0-9]{4}/g)[0];
-    } else if (data.match(/(t=)[0-9]{3}/g)) {
-      temperature = data.match(/(t=)[0-9]{3}/g)[0];
+var parseTemp = function(input) {
+  var response = [];
+  for (var i in input) {
+    var data = input[i];
+    if (data.error) {
+      response.push({error: data.error});
+      continue;
     }
-    temperature = temperature.split("=")[1];
-    temperature = parseInt(temperature);
+    var crc = data.match(/(crc=)[a-z0-9]*/g)[0];
+    crc = crc.split("=")[1];
+    var available = data.match(/([A-Z])\w+/g)[0];
+    var temperature = 'n/a';
+    if (available === 'YES') {
+      if (data.match(/(t=)[0-9]{5}/g)) {
+        temperature = data.match(/(t=)[0-9]{5}/g)[0];
+      } else if (data.match(/(t=)[0-9]{4}/g)) {
+        temperature = data.match(/(t=)[0-9]{4}/g)[0];
+      } else if (data.match(/(t=)[0-9]{3}/g)) {
+        temperature = data.match(/(t=)[0-9]{3}/g)[0];
+      }
+      temperature = temperature.split("=")[1];
+      temperature = parseInt(temperature);
+    }
+    var temp = {
+      crc: crc,
+      available: available,
+      temperature: {
+        raw: temperature,
+        celcius: temperature / 1000
+      },
+      time: Date.now()
+    };
+    response.push(temp);
   }
-  var temp = {
-    crc: crc,
-    available: available,
-    temperature: {
-      raw: temperature,
-      celcius: temperature / 1000
-    },
-    time: Date.now()
-  };
 
-  return temp;
+  return response;
 };
 
 var readAndParse = function(callback) {
@@ -86,9 +99,27 @@ var readAndParse = function(callback) {
   });
 };
 
+var init = function(sensors, newSettings, callback) {
+  settings = newSettings;
+  if (!sensors) {
+    callback("No input selected.");
+  } else if (typeof sensors === 'string') {
+    input = [sensors];
+  } else {
+    input = sensors;
+  }
+
+  if (settings.installKernelMod) {
+    exec("modprobe w1-gpio", modprobe);
+    exec("modprobe w1-therm", modprobe);
+  }
+  callback(undefined);
+};
+
 module.exports = {
+  init: init,
   readTemp: readTemp,
   parseTemp: parseTemp,
   readAndParse: readAndParse,
-  settings: settings
+  logDirectory: logDirectory
 };
