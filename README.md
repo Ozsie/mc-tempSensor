@@ -11,6 +11,10 @@ A simple library for accessing a DS18B20 digital thermometer on a RaspberryPi
 npm install mc-tempsensor
 ```
 
+***Documentation***
+
+https://ozsie.github.io/mc-tempSensor/mc-tempsensor/2.0.0/
+
 ***Settings***
 
 The default settings when initializing are:
