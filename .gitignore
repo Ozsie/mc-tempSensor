@@ -4,3 +4,4 @@
 **/npm-debug.log
 gpio-mock
 *.iml
+.coveralls.yml

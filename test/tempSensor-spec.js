@@ -14,7 +14,7 @@ describe('TempSensor', function() {
       expect(err).to.not.exist;
       expect(data[0].error.errno).to.equal(-2);
       expect(data[0].error.code).to.equal('ENOENT');
-      expect(data[0].error.syscall).to.equal('open');
+      expect(data[0].error.syscall).to.equal('access');
       expect(data[0].error.path).to.equal('/sys/bus/w1/devices/28-800000263717/w1_slave');
       done();
     });
@@ -27,7 +27,7 @@ describe('TempSensor', function() {
       expect(err).to.not.exist;
       expect(data[0].error.errno).to.equal(-2);
       expect(data[0].error.code).to.equal('ENOENT');
-      expect(data[0].error.syscall).to.equal('open');
+      expect(data[0].error.syscall).to.equal('access');
       expect(data[0].error.path).to.equal('/sys/bus/w1/devices/28-800000263717/w1_slave');
       done();
     });

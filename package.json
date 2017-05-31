@@ -7,7 +7,8 @@
     "publish": "git tag -a v$npm_package_version -m 'tag version v$npm_package_version'",
     "postpublish": "git push --tags",
     "pretest": "jshint tempSensor.js",
-    "test": "mocha test --recursive"
+    "test": "istanbul cover _mocha test --recursive",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
@@ -26,9 +27,13 @@
   },
   "homepage": "https://github.com/Ozsie/mc-tempSensor#readme",
   "dependencies": {
+    "winston": "2.3.1"
+  },
+  "devDependencies": {
     "jshint": "2.9.4",
-    "winston": "2.3.1",
-    "mocha": "3.2.0",
-    "chai": "4.0.0-canary.1"
+    "mocha": "^3.2.0",
+    "chai": "^4.0.0-canary.1",
+    "istanbul": "^0.4.5",
+    "coveralls": "^2.13.1"
   }
 }

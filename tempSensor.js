@@ -1,6 +1,8 @@
 var fs = require('fs');
+var path = require('path');
 var winston = require('winston');
 
+var sensorDirectory = '/sys/bus/w1/devices/';
 var logDirectory = './logs';
 
 var settings = {defaultPath: true, installKernelMod: false};
@@ -32,8 +34,10 @@ var readTemp = function(callback) {
     try {
       var path;
       if (settings.defaultPath) {
-        path = '/sys/bus/w1/devices/' + input[i] + '/w1_slave';
+        fs.accessSync(sensorDirectory + input[i] + '/w1_slave');
+        path = sensorDirectory + input[i] + '/w1_slave';
       } else {
+        fs.accessSync(input[i]);
         path = input[i];
       }
       var data = fs.readFileSync(path, 'utf8');
@@ -99,17 +103,18 @@ var readAndParse = function(callback) {
   });
 };
 
+var getDirectories = function(srcpath) {
+  return fs.readdirSync(srcpath).filter(file => fs.lstatSync(path.join(srcpath, file)).isDirectory());
+};
+
 var init = function(sensors, newSettings, callback) {
   if (newSettings) {
     settings = newSettings;
   }
 
   if (!sensors) {
-    if (callback) {
-      callback("No input selected.");
-    } else {
-      return "No input selected";
-    }
+    settings.defaultPath = true;
+    input = getDirectories(sensorDirectory);
   } else if (typeof sensors === 'string') {
     input = [sensors];
   } else {
