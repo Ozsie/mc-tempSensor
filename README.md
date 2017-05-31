@@ -1,3 +1,6 @@
+[![Coverage Status](https://coveralls.io/repos/github/Ozsie/mc-tempSensor/badge.svg?branch=master)](https://coveralls.io/github/Ozsie/mc-tempSensor?branch=master)
+[![Build Status](https://travis-ci.org/Ozsie/mc-tempSensor.svg?branch=master)](https://travis-ci.org/Ozsie/mc-tempSensor)
+
 **NOTE: Version 2.0.0 breaks compatibility with version 1.x**
 
 A simple library for accessing a DS18B20 digital thermometer on a RaspberryPi
