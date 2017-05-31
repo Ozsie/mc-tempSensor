@@ -8,6 +8,7 @@
     "postpublish": "git push --tags",
     "pretest": "jshint tempSensor.js",
     "test": "istanbul cover _mocha test --recursive",
+    "posttest": "rm -r ./docs && jsdoc -c ./jsdoc.json -d ./docs",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {

@@ -1,0 +1,9 @@
+{
+  "plugins": ["plugins/markdown"],
+  "source": {
+    "include": [ "tempSensor.js", "package.json", "README.md" ],
+    "exclude": [ "myProject/lib/ignore.js" ],
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  }
+}
