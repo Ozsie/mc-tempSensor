@@ -92,6 +92,19 @@ tempsensor.init(['28-800000263717', '28-800000555555'], undefined, function(err)
 
 ```
 
+When using init without sensor input, all sensors in default location will be used:
+
+```
+var tempSensor = require('mc-tempsensor');
+
+tempsensor.init(undefined, undefined, function(err) {
+  if (err) {
+    console.log(err);
+  }
+});
+
+```
+
 ***Data format***
 
 ```

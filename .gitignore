@@ -1,7 +1,5 @@
-**/node_modules
-.idea
-**/logs
-**/npm-debug.log
-gpio-mock
-*.iml
+node_modules
+logs
+tempSensor.iml
+coverage
 .coveralls.yml

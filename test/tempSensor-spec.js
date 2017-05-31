@@ -114,6 +114,7 @@ describe('TempSensor', function() {
       expect(temp[0].temperature.raw).to.equal(35000);
       expect(temp[0].temperature.celcius).to.equal(35);
       expect(temp[0].time).to.exist;
+      console.log(temp[0].temperature.fahrenheit)
       done();
     });
   });

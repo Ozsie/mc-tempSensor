@@ -4,6 +4,7 @@ var winston = require('winston');
 
 var sensorDirectory = '/sys/bus/w1/devices/';
 var logDirectory = './logs';
+var converters = [];
 
 var settings = {defaultPath: true, installKernelMod: false};
 
@@ -76,11 +77,13 @@ var parseTemp = function(input) {
       crc: crc,
       available: available,
       temperature: {
-        raw: temperature,
-        celcius: temperature / 1000
+        raw: temperature
       },
       time: Date.now()
     };
+    for (var name in converters) {
+      temp.temperature[name] = converters[name](temperature);
+    }
     response.push(temp);
   }
 
@@ -107,6 +110,10 @@ var getDirectories = function(srcpath) {
   return fs.readdirSync(srcpath).filter(file => fs.lstatSync(path.join(srcpath, file)).isDirectory());
 };
 
+var addConverter = function(name, converterFunc) {
+  converters[name] = converterFunc;
+};
+
 var init = function(sensors, newSettings, callback) {
   if (newSettings) {
     settings = newSettings;
@@ -130,10 +137,23 @@ var init = function(sensors, newSettings, callback) {
   }
 };
 
+var convertToCelcius = function(raw) {
+  return raw/1000;
+};
+
+var convertToFahrenheit = function(raw) {
+  var c = convertToCelcius(raw);
+  return c * (9/5) + 32;
+};
+
+addConverter('celcius', convertToCelcius);
+addConverter('fahrenheit', convertToFahrenheit);
+
 module.exports = {
   init: init,
   readTemp: readTemp,
   parseTemp: parseTemp,
   readAndParse: readAndParse,
+  addConverter: addConverter,
   logDirectory: logDirectory
 };
