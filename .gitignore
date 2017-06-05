@@ -3,3 +3,4 @@ logs
 tempSensor.iml
 coverage
 .coveralls.yml
+npm-debug.log
