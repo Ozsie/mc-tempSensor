@@ -4,3 +4,4 @@ tempSensor.iml
 coverage
 .coveralls.yml
 npm-debug.log
+yarn-error.log
