@@ -80,33 +80,41 @@ var parseTemp = function(input) {
       response.push({error: data.error});
       continue;
     }
-    var crc = data.match(/(crc=)[a-z0-9]*/g)[0];
-    crc = crc.split('=')[1];
-    var available = data.match(/([A-Z])\w+/g)[0];
-    var temperature = 'n/a';
-    if (available === 'YES') {
-      if (data.match(/(t=)[0-9]{5}/g)) {
-        temperature = data.match(/(t=)[0-9]{5}/g)[0];
-      } else if (data.match(/(t=)[0-9]{4}/g)) {
-        temperature = data.match(/(t=)[0-9]{4}/g)[0];
-      } else if (data.match(/(t=)[0-9]{3}/g)) {
-        temperature = data.match(/(t=)[0-9]{3}/g)[0];
+    if (data.length === 0) {
+      response.push({error: 'Could not read data'});
+      continue;
+    }
+    try {
+      var crc = data.match(/(crc=)[a-z0-9]*/g)[0];
+      crc = crc.split('=')[1];
+      var available = data.match(/([A-Z])\w+/g)[0];
+      var temperature = 'n/a';
+      if (available === 'YES') {
+        if (data.match(/(t=)[0-9]{5}/g)) {
+          temperature = data.match(/(t=)[0-9]{5}/g)[0];
+        } else if (data.match(/(t=)[0-9]{4}/g)) {
+          temperature = data.match(/(t=)[0-9]{4}/g)[0];
+        } else if (data.match(/(t=)[0-9]{3}/g)) {
+          temperature = data.match(/(t=)[0-9]{3}/g)[0];
+        }
+        temperature = temperature.split('=')[1];
+        temperature = parseInt(temperature);
       }
-      temperature = temperature.split('=')[1];
-      temperature = parseInt(temperature);
+      var temp = {
+        crc: crc,
+        available: available,
+        temperature: {
+          raw: temperature
+        },
+        time: Date.now()
+      };
+      for (var name in converters) {
+        temp.temperature[name] = converters[name](temperature);
+      }
+      response.push(temp);
+    } catch (error) {
+      response.push({error: error});
     }
-    var temp = {
-      crc: crc,
-      available: available,
-      temperature: {
-        raw: temperature
-      },
-      time: Date.now()
-    };
-    for (var name in converters) {
-      temp.temperature[name] = converters[name](temperature);
-    }
-    response.push(temp);
   }
 
   return response;
